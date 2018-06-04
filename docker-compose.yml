@@ -1,0 +1,23 @@
+version: "3"
+services:
+  web:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./codeignitor:/var/www/codeignitor
+      - ./nginx_config:/etc/nginx
+    networks:
+      - webnet
+    depends_on:
+      - php
+  php:
+    image: php:fpm
+    volumes:
+      - ./codeignitor:/var/www/codeignitor
+      - ./php.ini:/usr/local/etc/php/php.ini
+    networks:
+      - webnet
+networks:
+  webnet:
+    driver: bridge
