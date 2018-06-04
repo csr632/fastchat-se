@@ -5,7 +5,7 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./codeignitor:/var/www/codeignitor
+      - ./codeignitor:/codeignitor
       - ./nginx_config:/etc/nginx
     networks:
       - webnet
@@ -14,10 +14,11 @@ services:
   php:
     image: php:fpm
     volumes:
-      - ./codeignitor:/var/www/codeignitor
+      - ./codeignitor:/codeignitor
       - ./php.ini:/usr/local/etc/php/php.ini
     networks:
       - webnet
+    # user: "1000:1000"
 networks:
   webnet:
     driver: bridge
