@@ -40,6 +40,7 @@ services:
     image: mysql:8
     environment:
       - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_DATABASE=fastchat_db
       - MYSQL_USER=fastchat
       - MYSQL_PASSWORD=654321
     networks:
