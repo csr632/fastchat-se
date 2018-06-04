@@ -29,8 +29,6 @@ services:
     build: 
       dockerfile: ../fastchat-fe/fastchat_fe.dockerfile
       context: ../fastchat-fe
-    ports:
-      - "8080:80"
     networks:
       - webnet
 
