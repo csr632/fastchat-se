@@ -43,12 +43,18 @@ services:
       - MYSQL_DATABASE=fastchat_db
       - MYSQL_USER=fastchat
       - MYSQL_PASSWORD=654321
+      # https://github.com/docker-library/mysql/issues/241
+      - MYSQL_ROOT_HOST=172.*.*.*
+    ports:
+      - "3306:3306"
     networks:
       - webnet
     # https://stackoverflow.com/questions/39175194/docker-compose-persistent-data-mysql
     volumes:
       - mysql-datavolume:/var/lib/mysql
-      - ./mysql_config:/etc/mysql
+      # 修改配置以后可能需要重建data volume
+      # https://github.com/docker-library/mysql/issues/51
+      - ./mysql_config:/etc/mysql:ro
 
 volumes:
   mysql-datavolume:
