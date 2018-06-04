@@ -5,8 +5,8 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ./codeignitor:/codeignitor
-      - ./nginx_config:/etc/nginx
+      # - ./codeignitor:/codeignitor:ro
+      - ./nginx_config:/etc/nginx:ro
     networks:
       - webnet
     depends_on:
@@ -17,10 +17,11 @@ services:
       dockerfile: ./fastchat_se.dockerfile
       context: ./
     volumes:
-      - ./codeignitor:/codeignitor
-      - ./php_etc:/usr/local/etc
+      - ./codeignitor:/codeignitor:ro
+      - ./php_etc:/usr/local/etc:ro
     networks:
       - webnet
+    # https://github.com/docker-library/php/issues/576
     # user: "1000:1000"
 networks:
   webnet:
