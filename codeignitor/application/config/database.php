@@ -75,9 +75,9 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => '',
-	'password' => '',
+	'hostname' => 'mysql',
+	'username' => 'fastchat',
+	'password' => '654321',
 	'database' => '',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',

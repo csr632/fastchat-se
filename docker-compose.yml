@@ -11,6 +11,7 @@ services:
     depends_on:
       - php
       - fe_static
+      - mysql
 
   php:
     # image: php:fpm
@@ -22,6 +23,8 @@ services:
       - ./php_etc:/usr/local/etc:ro
     networks:
       - webnet
+    depends_on:
+      - mysql
     # https://github.com/docker-library/php/issues/576
     # user: "1000:1000"
 
@@ -31,6 +34,21 @@ services:
       context: ../fastchat-fe
     networks:
       - webnet
+
+  mysql:
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=123456
+      - MYSQL_USER=fastchat
+      - MYSQL_PASSWORD=654321
+    networks:
+      - webnet
+    # https://stackoverflow.com/questions/39175194/docker-compose-persistent-data-mysql
+    volumes:
+      - mysql-datavolume:/var/lib/mysql
+
+volumes:
+  mysql-datavolume:
 
 networks:
   webnet:
