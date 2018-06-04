@@ -1,6 +1,6 @@
 version: "3"
 services:
-  web:
+  proxy:
     image: nginx
     ports:
       - "80:80"
@@ -11,6 +11,7 @@ services:
       - webnet
     depends_on:
       - php
+
   php:
     # image: php:fpm
     build: 
@@ -23,6 +24,18 @@ services:
       - webnet
     # https://github.com/docker-library/php/issues/576
     # user: "1000:1000"
+
+  fe_static:
+    build: 
+      dockerfile: ../fastchat-fe/fastchat_fe.dockerfile
+      context: ../fastchat-fe
+    ports:
+      - "8080:80"
+    # volumes:
+    #   - ./dist:/fe_static:ro
+    networks:
+      - webnet
+
 networks:
   webnet:
     driver: bridge
