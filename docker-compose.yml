@@ -12,7 +12,10 @@ services:
     depends_on:
       - php
   php:
-    image: php:fpm
+    # image: php:fpm
+    build: 
+      dockerfile: ./fastchat_se.dockerfile
+      context: ./
     volumes:
       - ./codeignitor:/codeignitor
       - ./php_etc:/usr/local/etc
