@@ -15,7 +15,7 @@ services:
     image: php:fpm
     volumes:
       - ./codeignitor:/codeignitor
-      - ./php.ini:/usr/local/etc/php/php.ini
+      - ./php_etc:/usr/local/etc
     networks:
       - webnet
     # user: "1000:1000"
