@@ -47,6 +47,7 @@ services:
     # https://stackoverflow.com/questions/39175194/docker-compose-persistent-data-mysql
     volumes:
       - mysql-datavolume:/var/lib/mysql
+      - ./mysql_config:/etc/mysql
 
 volumes:
   mysql-datavolume:
