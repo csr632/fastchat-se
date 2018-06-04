@@ -26,11 +26,12 @@ services:
     # user: "1000:1000"
 
   fe_static:
-    build: 
-      dockerfile: ../fastchat-fe/fastchat_fe.dockerfile
-      context: ../fastchat-fe
+    image: nginx
     ports:
       - "8080:80"
+    volumes:
+      - ../fastchat-fe/dist:/fe_static:ro
+      - ../fastchat-fe/fe_static_nginx_config/default.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - webnet
 
