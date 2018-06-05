@@ -19,7 +19,7 @@ services:
       dockerfile: ./fastchat_se.dockerfile
       context: ./
     volumes:
-      - ./codeignitor:/codeignitor:ro
+      - ./codeigniter:/codeigniter:ro
       - ./php_etc:/usr/local/etc:ro
     networks:
       - webnet
