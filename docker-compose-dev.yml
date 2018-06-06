@@ -21,6 +21,7 @@ services:
     volumes:
       - ./codeigniter:/codeigniter:ro
       - ./php_config/php-dev.ini:/usr/local/etc/php/php.ini:ro
+      - ./ci_logs:/ci_logs
     networks:
       - webnet
     depends_on:
