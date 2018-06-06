@@ -20,6 +20,7 @@ services:
       context: ./
     volumes:
       - ./codeigniter:/codeigniter:ro
+      - ./php_config/php-dev.ini:/usr/local/etc/php/php.ini:ro
     networks:
       - webnet
     depends_on:
