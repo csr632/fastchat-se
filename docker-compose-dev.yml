@@ -21,6 +21,9 @@ services:
       # bind mount 时注意权限问题：
       # https://stackoverflow.com/questions/29245216/write-in-shared-volumes-docker
       - ./ci_logs:/ci_logs
+      # /codeigniter/ 文件夹的内容将被容器内的www-data用户读取，请确保这个用户有读取权限：
+      # chmod -R 777 ./codeigniter
+      - ./codeigniter:/codeigniter/
     networks:
       - webnet
     depends_on:
