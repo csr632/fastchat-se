@@ -5,31 +5,36 @@ class Users extends CI_Controller
   {
     parent::__construct();
     $this->load->model('UserModel');
+
+    // this controller only handles POST request
+    if ($this->input->method() !== 'post') {
+      show_404();
+    }
   }
 
   public function register()
   {
-    if ($this->input->method() !== 'post') {
-      return $this->output
-        ->set_status_header(404);
-    }
-
     // https://stackoverflow.com/a/37570103
     $body = json_decode($this->security->xss_clean($this->input->raw_input_stream));
-
+    if (!isset($body->userName) || !isset($body->password)) {
+      return $this->output
+        ->set_content_type('application/json')
+        ->set_status_header(400)
+        ->set_output(json_encode(array(
+          'success' => false,
+          'msg' => "username or password is not given")));
+    }
     $userName = $body->userName;
     $password = $body->password;
-    $this->UserModel->addUser($userName, $password);
 
-    // https://stackoverflow.com/questions/18821492/code-igniter-how-to-return-json-response-from-controller
+    $res = $this->UserModel->addUser($userName, $password);
+    $code = $res['code'];
+    unset($res['code']);
+
     return $this->output
       ->set_content_type('application/json')
-      ->set_status_header(200)
-      ->set_output(json_encode(array(
-        'status' => 'ok',
-        'userName' => $userName,
-        // 'password' => $password,
-      )));
+      ->set_status_header($code)
+      ->set_output(json_encode($res));
   }
 
 }
