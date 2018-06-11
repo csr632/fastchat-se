@@ -13,4 +13,5 @@
   ],
   "phpfmt.psr2": false,
   "phpfmt.indent_with_space": 2,
+  "editor.wordSeparators": "`$~!@#%^&*()-=+[{]}\\|;:'\",.<>/?",
 }
