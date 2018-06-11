@@ -1,11 +1,11 @@
 version: "3"
 services:
   proxy:
-    image: nginx
+    build: 
+      dockerfile: ./fastchat_se_proxy.dockerfile
+      context: ./
     ports:
       - "80:80"
-    volumes:
-      - ./nginx_config:/etc/nginx:ro
     networks:
       - webnet
     depends_on:
@@ -14,19 +14,17 @@ services:
       - mysql
 
   php:
-    # image: php:fpm
     build: 
-      dockerfile: ./fastchat_se.dockerfile
+      dockerfile: ./fastchat_se_php.dockerfile
       context: ./
     volumes:
-      - ./codeigniter:/codeigniter:ro
-      - ./php_etc:/usr/local/etc:ro
+      # bind mount 时注意权限问题：
+      # https://stackoverflow.com/questions/29245216/write-in-shared-volumes-docker
+      - ./ci_logs:/ci_logs
     networks:
       - webnet
     depends_on:
       - mysql
-    # https://github.com/docker-library/php/issues/576
-    # user: "1000:1000"
 
   fe_static:
     build: 
@@ -36,18 +34,19 @@ services:
       - webnet
 
   mysql:
-    image: mysql:8
-    environment:
-      - MYSQL_ROOT_PASSWORD=123456
-      - MYSQL_USER=fastchat
-      - MYSQL_PASSWORD=654321
+    build: 
+      dockerfile: ./fastchat_se_mysql.dockerfile
+      context: ./
+    ports:
+      - "3306:3306"
     networks:
       - webnet
-    # https://stackoverflow.com/questions/39175194/docker-compose-persistent-data-mysql
     volumes:
       - mysql-datavolume:/var/lib/mysql
 
 volumes:
+  # 修改配置以后可能需要重建data volume
+  # https://github.com/docker-library/mysql/issues/51
   mysql-datavolume:
 
 networks:
