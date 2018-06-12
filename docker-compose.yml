@@ -47,6 +47,7 @@ services:
       - webnet
     volumes:
       - mysql-datavolume:/var/lib/mysql
+      - ./mysql_init_scripts:/docker-entrypoint-initdb.d/
 
 volumes:
   # 修改配置以后可能需要重建data volume

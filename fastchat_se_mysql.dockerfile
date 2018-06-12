@@ -12,3 +12,5 @@ COPY ./sources.list /etc/apt/sources.list
 VOLUME /var/lib/mysql
 
 COPY ./mysql_config /etc/mysql/
+
+COPY ./mysql_init_scripts /docker-entrypoint-initdb.d/
