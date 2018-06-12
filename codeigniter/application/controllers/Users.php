@@ -5,14 +5,18 @@ class Users extends CI_Controller
   {
     parent::__construct();
     $this->load->model('UserModel');
+  }
 
-    // this controller only handles POST request
-    if ($this->input->method() !== 'post') {
+  public function index()
+  {
+    if ($this->input->method() === 'post') {
+      $this->register();
+    } else {
       show_404();
     }
   }
 
-  public function register()
+  private function register()
   {
     // https://stackoverflow.com/a/37570103
     $body = json_decode($this->security->xss_clean($this->input->raw_input_stream));
@@ -26,15 +30,20 @@ class Users extends CI_Controller
     }
     $userName = $body->userName;
     $password = $body->password;
+    $email = $body->email;
 
-    $res = $this->UserModel->addUser($userName, $password);
-    $code = $res['code'];
-    unset($res['code']);
-
-    return $this->output
-      ->set_content_type('application/json')
-      ->set_status_header($code)
-      ->set_output(json_encode($res));
+    $res = $this->UserModel->addUser($userName, $password, $email);
+    if ($res["result"] === 'ok') {
+      return $this->output
+        ->set_content_type('application/json')
+        ->set_status_header(200)
+        ->set_output(json_encode($res));
+    } else if ($res["result"] === 'exists') {
+      return $this->output
+        ->set_content_type('application/json')
+        ->set_status_header(409)
+        ->set_output(json_encode($res));
+    }
   }
 
 }
