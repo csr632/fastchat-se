@@ -5,6 +5,7 @@ class Session extends CI_Controller
   {
     parent::__construct();
     $this->load->model('SessionModel');
+    $this->load->model('UserModel');
 
   }
 
@@ -36,7 +37,8 @@ class Session extends CI_Controller
     switch ($res) {
       case 'ok':
         $code = 200;
-        $response = array('success' => true, 'msg' => $res);
+        $userInfo = $this->UserModel->getUserInfo($userName);
+        $response = array('success' => true, 'msg' => $res, 'data' => $userInfo);
         break;
       case 'not exist':
         $code = 404;
