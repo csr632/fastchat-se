@@ -21,12 +21,14 @@ class UserModel extends CI_Model
     return 'ok';
   }
 
-  public function addUser($userName, $password, $email)
+  public function addUser($userName, $password, $email, $nickname, $gender)
   {
     $res = $this->db->insert('users', array(
       'userName' => $userName,
       'password' => $password,
       'email' => $email,
+      'nickname' => $nickname,
+      'gender' => $gender,
     ));
     if ($res === false) {
       $error = $this->db->error();

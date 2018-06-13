@@ -31,8 +31,10 @@ class Users extends CI_Controller
     $userName = $body->userName;
     $password = $body->password;
     $email = $body->email;
+    $nickname = $body->nickname;
+    $gender = $body->gender;
 
-    $res = $this->UserModel->addUser($userName, $password, $email);
+    $res = $this->UserModel->addUser($userName, $password, $email, $nickname, $gender);
     if ($res["result"] === 'ok') {
       return $this->output
         ->set_content_type('application/json')
