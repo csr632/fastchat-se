@@ -1,4 +1,6 @@
 <?php
+use \Firebase\JWT\JWT;
+
 class Session extends CI_Controller
 {
   public function __construct()
@@ -38,7 +40,10 @@ class Session extends CI_Controller
       case 'ok':
         $code = 200;
         $userInfo = $this->UserModel->getUserInfo($userName);
-        $response = array('success' => true, 'msg' => $res, 'data' => $userInfo);
+        $jwt = $this->generateJWT($userName);
+        $response = array('success' => true,
+          'msg' => $res,
+          'data' => array('jwt' => $jwt, 'userInfo' => $userInfo));
         break;
       case 'not exist':
         $code = 404;
@@ -57,6 +62,17 @@ class Session extends CI_Controller
       ->set_content_type('application/json')
       ->set_status_header($code)
       ->set_output(json_encode($response));
+  }
+
+  private function generateJWT($userName)
+  {
+    $key = "fastchat_se_default_jwt_key";
+    $token = array(
+      "userName" => $userName,
+    );
+    $jwt = JWT::encode($token, $key);
+    // $decoded = (array) JWT::decode($jwt, $key, array('HS256'));
+    return $jwt;
   }
 
   // private function deactivate()
