@@ -18,15 +18,14 @@ class Users extends CI_Controller
 
   private function register()
   {
-    // https://stackoverflow.com/a/37570103
-    $body = json_decode($this->security->xss_clean($this->input->raw_input_stream));
-    if (!isset($body->userName) || !isset($body->password)) {
-      return $this->output
-        ->set_content_type('application/json')
-        ->set_status_header(400)
-        ->set_output(json_encode(array(
-          'success' => false,
-          'msg' => "username or password is not given")));
+    $body = json_body();
+    if (!isset($body->userName)
+      || !isset($body->password)
+      || !isset($body->email)
+      || !isset($body->nickname)
+      || !isset($body->gender)
+    ) {
+      return json_response(400, false, 'info incomplete');
     }
     $userName = $body->userName;
     $password = $body->password;
@@ -36,15 +35,9 @@ class Users extends CI_Controller
 
     $res = $this->UserModel->addUser($userName, $password, $email, $nickname, $gender);
     if ($res["result"] === 'ok') {
-      return $this->output
-        ->set_content_type('application/json')
-        ->set_status_header(200)
-        ->set_output(json_encode($res));
+      return json_response(200, true, 'ok');
     } else if ($res["result"] === 'exists') {
-      return $this->output
-        ->set_content_type('application/json')
-        ->set_status_header(409)
-        ->set_output(json_encode($res));
+      return json_response(409, false, 'some fields exists', $res);
     }
   }
 
