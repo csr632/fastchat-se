@@ -32,25 +32,26 @@ class UserModel extends CI_Model
     ));
     if ($res === false) {
       $error = $this->db->error();
+      $errorStr = json_encode($error);
       switch ($error['code']) {
         case 1062:
           // https://dev.mysql.com/doc/refman/8.0/en/error-messages-server.html#error_er_dup_entry
           $matchRes = preg_match("/Duplicate entry '(.*)' for key '(?:(.*)_UNIQUE|(PRIMARY))'/",
             $error['message'], $matches);
           if ($matchRes !== 1) {
-            throw new Exception("Unknown mysql 1062 error: ${$error}");
+            throw new Exception("Unknown mysql 1062 error: {$errorStr}");
           }
           if (count($matches) === 3) {
             $return = array('result' => 'exists', 'field' => $matches[2]);
           } else if (count($matches) === 4) {
             $return = array('result' => 'exists', 'field' => 'userName');
           } else {
-            throw new Exception("Unknown mysql 1062 error: ${$error}");
+            throw new Exception("Unknown mysql 1062 error: {$errorStr}");
           }
           break;
 
         default:
-          throw new Exception("Unknown mysql error: ${$error}");
+          throw new Exception("Unknown mysql error: {$errorStr}");
           break;
       }
     } else {
@@ -61,6 +62,7 @@ class UserModel extends CI_Model
 
   public function getUserInfo($userName)
   {
+    // 如果不存在这个userName，返回NULL
     $res = $this->db->get_where('users', array('userName' => $userName))->row_array();
 
     if ($res !== null) {
