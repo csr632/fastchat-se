@@ -65,7 +65,7 @@ class UserModel extends CI_Model
     // 如果不存在这个userName，返回NULL
     $res = $this->db->get_where('users', array('userName' => $userName))->row_array();
 
-    if ($res !== null) {
+    if (!is_null($res)) {
       unset($res['password']);
     }
 

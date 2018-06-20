@@ -27,6 +27,19 @@ class Friends extends CI_Controller
     if (is_null($friendList)) {
       return json_response(401, false, 'jwt header invalid');
     }
+    $friendList = array_map(
+      function ($item) {
+        return array('friendInfo' => array('userName' => $item['userName'],
+          'nickname' => $item['nickname'],
+          'email' => $item['email'],
+          'gender' => $item['gender']),
+          'chatInfo' => array('chatId' => $item['chatId'],
+            'chatName' => $item['chatName'],
+            'isGroup' => $item['isGroup'],
+            // 'lastestMessage' => $item['lastestMessage'],
+          ));
+      },
+      $friendList);
     return json_response(200, true, 'ok', $friendList);
   }
 }
