@@ -52,3 +52,6 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+
+$route['chats/(:num)/messages'] = 'chats/messages/$1';
+$route['chats/(:num)/members'] = 'chats/members/$1';
