@@ -36,7 +36,11 @@ class Friends extends CI_Controller
           'chatInfo' => array('chatId' => $item['chatId'],
             'chatName' => $item['chatName'],
             'isGroup' => $item['isGroup'],
-            // 'lastestMessage' => $item['lastestMessage'],
+            'lastestMessage' => array('messageId' => $item['latestMessageId'],
+              'chatId' => $item['chatId'],
+              'content' => $item['latestContent'],
+              'from' => $item['latestFrom'],
+            ),
           ));
       },
       $friendList);
