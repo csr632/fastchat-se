@@ -43,11 +43,25 @@ class ChatModel extends CI_Model
         'from',
       ))
       ->from('messages')
-			->where('chatId', $chatId)
-			->order_by('messageId', 'ASC')
+      ->where('chatId', $chatId)
+      ->order_by('messageId', 'ASC')
       ->get()
       ->result_array();
 
     return $res;
+  }
+
+  public function saveMessage($chatId, $from, $content)
+  {
+    $insert = array('chatId' => $chatId,
+      'from' => $from,
+      'content' => $content);
+    $success = $this->db->insert('messages', $insert);
+    if (!$success) {
+      return null;
+    }
+    $messageId = $this->db->insert_id();
+    $insert['messageId'] = $messageId;
+    return $insert;
   }
 }
