@@ -10,14 +10,16 @@ class ChatModel extends CI_Model
   {
     $sql = <<<'MYQUERY'
 SELECT
-    chats.chatId, chats.chatName,
+    chats.chatId,
+    chats.chatName,
     chats.isGroup,
     latestMessages.messageId,
     latestMessages.content,
     latestMessages.`from`
 FROM
     inChat,
-    chats,
+    chats
+        LEFT OUTER JOIN
     (SELECT
         m1.*
     FROM
@@ -27,14 +29,16 @@ FROM
                 MAX(m2.messageId)
             FROM
                 messages AS m2
-            GROUP BY m2.chatId)) AS latestMessages
+            GROUP BY m2.chatId)) AS latestMessages ON latestMessages.chatId = chats.chatId
 WHERE
     inChat.userName = ?
-    AND chats.chatId = inChat.chatId
-		AND latestMessages.chatId = chats.chatId
+        AND chats.chatId = inChat.chatId
 MYQUERY;
-    $res = $this->db->query($sql, array($userName));
-    return $res->result_array();
+    $res = $this->db->query($sql, array($userName))->result_array();
+    foreach ($res as &$item) {
+      $item['isGroup'] = ($item['isGroup'] === '0' ? false : true);
+    }
+    return $res;
   }
 
   public function getMembers($chatId)
@@ -94,5 +98,28 @@ MYQUERY;
     $messageId = $this->db->insert_id();
     $insert['messageId'] = $messageId;
     return $insert;
+  }
+
+  public function createChat($chatName, $isGroup)
+  {
+    $success = $this->db->insert('chats', array('chatName' => $chatName,
+      'isGroup' => $isGroup));
+    if (!$success) {
+      return null;
+    }
+    $chatId = $this->db->insert_id();
+    return $chatId;
+  }
+
+  public function addMembers($chatId, $members)
+  {
+    $batch = array_map(function ($memberName) use ($chatId) {
+      return array('userName' => $memberName, 'chatId' => $chatId);
+    }, $members);
+    $success = $this->db->insert_batch('inChat', $batch);
+    if ($success !== count($members)) {
+      return false;
+    }
+    return true;
   }
 }
