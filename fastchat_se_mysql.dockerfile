@@ -6,6 +6,8 @@ ENV MYSQL_ROOT_HOST=%
 ENV MYSQL_USER=fastchat
 ENV MYSQL_PASSWORD=654321
 ENV MYSQL_DATABASE=fastchat_db
+# https://github.com/docker-library/mysql/issues/131
+ENV LANG=C.UTF-8
 
 COPY ./sources.list /etc/apt/sources.list
 
