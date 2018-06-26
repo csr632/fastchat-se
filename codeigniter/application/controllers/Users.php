@@ -7,15 +7,6 @@ class Users extends CI_Controller
     $this->load->model('UserModel');
   }
 
-  public function index()
-  {
-    if ($this->input->method() === 'post') {
-      $this->register();
-    } else {
-      show_404();
-    }
-  }
-
   private function register()
   {
     $body = json_body();
@@ -39,6 +30,18 @@ class Users extends CI_Controller
     } else if ($res["result"] === 'exists') {
       return json_response(409, false, 'some fields exists', $res);
     }
+  }
+
+  public function findUsers()
+  {
+    $contain = $this->input->get('contain', true);
+    $parsedJWT = parseJWT();
+    if (is_null($parsedJWT)) {
+      return json_response(401, false, 'no jwt header');
+    }
+    $userName = $parsedJWT['userName'];
+    $res = $this->UserModel->findUsers($contain, $userName);
+    return json_response(200, true, 'ok', $res);
   }
 
 }

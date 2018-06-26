@@ -53,6 +53,8 @@ $route['default_controller'] = 'welcome';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
 
+$route['users']['GET'] = 'users/findUsers';
+$route['users']['POST'] = 'users/register';
 $route['chats']['GET'] = 'chats/getChats';
 $route['chats']['POST'] = 'chats/postChat';
 $route['chats/(:num)/messages']['GET'] = 'chats/getMessages/$1';

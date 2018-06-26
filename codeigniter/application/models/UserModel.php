@@ -71,4 +71,21 @@ class UserModel extends CI_Model
 
     return $res;
   }
+
+  public function findUsers($contain, $selfName)
+  {
+    $res = $this->db->select(array('userName',
+      'nickname',
+      'email',
+      'gender',
+    ))->from('users')
+      ->group_start()
+      ->like('userName', $contain, 'both')
+      ->or_like('nickname', $contain, 'both')
+      ->group_end()
+      ->where('userName !=', $selfName)
+      ->get()
+      ->result_array();
+    return $res;
+  }
 }
