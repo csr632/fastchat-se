@@ -7,6 +7,30 @@ class Chats extends CI_Controller
     $this->load->model('ChatModel');
   }
 
+  public function getChats()
+  {
+    $parsedJWT = parseJWT();
+    if (is_null($parsedJWT)) {
+      return json_response(401, false, 'no jwt header');
+    }
+    $userName = $parsedJWT['userName'];
+    $chats = $this->ChatModel->getChats($userName);
+    $chats = array_map(
+      function ($item) {
+        return array(
+          'chatId' => $item['chatId'],
+          'chatName' => $item['chatName'],
+          'isGroup' => $item['isGroup'],
+          'lastestMessage' => array('messageId' => $item['messageId'],
+            'content' => $item['content'],
+            'from' => $item['from'],
+          ),
+        );
+      },
+      $chats);
+    json_response(200, true, 'ok', $chats);
+  }
+
   public function getMessages($chatId)
   {
     $res = $this->ChatModel->getMessages($chatId);

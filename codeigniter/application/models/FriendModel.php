@@ -14,46 +14,29 @@ class FriendModel extends CI_Model
     if (is_null($this->UserModel->getUserInfo($userName))) {
       return null;
     }
-    // 对于每个好友，不仅找到好友的信息，还要找到对应的私聊的信息
-    $res = $this->db->query(<<<'MYQUERY'
-SELECT
-    `friend`.`userName` AS `userName`,
-    `friend`.`nickname` AS `nickname`,
-    `friend`.`email` AS `email`,
-    `friend`.`gender` AS `gender`,
-    `chats`.`chatId` AS `chatId`,
-    `chats`.`chatName` AS `chatName`,
-    `chats`.`isGroup` AS `isGroup`,
-    `latestMessageRow`.`messageId` AS `latestMessageId`,
-    `latestMessageRow`.`content` AS `latestContent`,
-    `latestMessageRow`.`from` AS `latestFrom`
-FROM
-    `friendships`,
-    `inChat` AS `inChat1`,
-    `inChat` AS `inChat2`,
-    `chats`,
-    `users` AS `friend`,
-    (SELECT
-        m1.*
-    FROM
-        messages AS m1
-    WHERE
-        m1.messageId IN (SELECT
-                MAX(m2.messageId)
-            FROM
-                messages AS m2
-            GROUP BY m2.chatId)) AS latestMessageRow
-WHERE
-    `friendships`.`userName` = 't3'
-        AND `inChat1`.`chatId` = `inChat2`.`chatId`
-        AND `inChat1`.`userName` = 't3'
-        AND `inChat2`.`userName` = `friendships`.`friendName`
-        AND `chats`.`chatId` = `inChat1`.`chatId`
-        AND `chats`.`isGroup` = 0
-        AND `friend`.`userName` = `friendships`.`friendName`
-        AND `latestMessageRow`.`chatId` = `chats`.`chatId`
-MYQUERY
-    );
+    // 对于每个好友，不仅找到好友的信息，还要找到对应的私聊的chatId
+    $res = $this->db->select(array(
+      'users.userName as userName',
+      'users.email as email',
+      'users.nickname as nickname',
+      'users.gender as gender',
+      'chats.chatId',
+    ))
+      ->from(array(
+        'friendships',
+        'users',
+        'inChat as ic1',
+        'inChat as ic2',
+        'chats',
+      ))
+      ->where('friendships.userName', $userName)
+      ->where('friendships.friendName = users.userName')
+      ->where('ic1.chatId = ic2.chatId')
+      ->where('ic1.chatId = chats.chatId')
+      ->where('chats.isGroup', false)
+      ->where('ic1.userName', $userName)
+      ->where('ic2.userName = friendships.friendName')
+      ->get();
     return $res->result_array();
   }
 }

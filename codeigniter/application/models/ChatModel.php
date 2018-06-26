@@ -6,6 +6,37 @@ class ChatModel extends CI_Model
     $this->load->database();
   }
 
+  public function getChats($userName)
+  {
+    $sql = <<<'MYQUERY'
+SELECT
+    chats.chatId, chats.chatName,
+    chats.isGroup,
+    latestMessages.messageId,
+    latestMessages.content,
+    latestMessages.`from`
+FROM
+    inChat,
+    chats,
+    (SELECT
+        m1.*
+    FROM
+        messages AS m1
+    WHERE
+        m1.messageId IN (SELECT
+                MAX(m2.messageId)
+            FROM
+                messages AS m2
+            GROUP BY m2.chatId)) AS latestMessages
+WHERE
+    inChat.userName = ?
+    AND chats.chatId = inChat.chatId
+		AND latestMessages.chatId = chats.chatId
+MYQUERY;
+    $res = $this->db->query($sql, array($userName));
+    return $res->result_array();
+  }
+
   public function getMembers($chatId)
   {
     // 如果不存在这个chatId，返回NULL

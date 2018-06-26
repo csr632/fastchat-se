@@ -23,3 +23,6 @@ function parseJWT()
   // var_dump($decoded);die();
   return $decoded;
 }
+
+// TODO: 考虑在加载jwt_helper时就解析jwt
+// $parsedJWT = parseJWT();
