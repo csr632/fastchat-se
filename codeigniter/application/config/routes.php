@@ -55,6 +55,10 @@ $route['translate_uri_dashes'] = FALSE;
 
 $route['users']['GET'] = 'users/findUsers';
 $route['users']['POST'] = 'users/register';
+
+$route['friends']['GET'] = 'friends/getFriendList';
+$route['friends/requests']['POST'] = 'friends/addFriendRequest';
+
 $route['chats']['GET'] = 'chats/getChats';
 $route['chats']['POST'] = 'chats/postChat';
 $route['chats/(:num)/messages']['GET'] = 'chats/getMessages/$1';

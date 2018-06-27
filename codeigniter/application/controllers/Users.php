@@ -7,7 +7,7 @@ class Users extends CI_Controller
     $this->load->model('UserModel');
   }
 
-  private function register()
+  public function register()
   {
     $body = json_body();
     if (!isset($body->userName)

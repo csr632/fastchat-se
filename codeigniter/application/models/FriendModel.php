@@ -39,4 +39,50 @@ class FriendModel extends CI_Model
       ->get();
     return $res->result_array();
   }
+
+  public function addFriendRequest($from, $to, $msg)
+  {
+    if ($from === $to) {
+      return 'is self';
+    }
+    if ($this->isFriend($from, $to)) {
+      return 'is friend';
+    }
+    if (!is_null($this->getFriendRequest($from, $to))) {
+      return 'request exist';
+    }
+    $res = $this->db
+      ->set(array('from' => $from,
+        'to' => $to,
+        'message' => $msg,
+        'state' => 'pending'))
+      ->set('time', 'NOW()', false)
+      ->insert('friendRequests');
+    return $res;
+  }
+
+  private function isFriend($userName1, $userName2)
+  {
+    $res = $this->db
+      ->from('friendships')
+      ->where('userName', $userName1)
+      ->where('friendName', $userName2)
+      ->get()
+      ->row_array();
+    if (is_null($res)) {
+      return false;
+    }
+    return true;
+  }
+
+  private function getFriendRequest($from, $to)
+  {
+    $res = $this->db
+      ->from('friendRequests')
+      ->where('from', $from)
+      ->where('to', $to)
+      ->get()
+      ->row_array();
+    return $res;
+  }
 }
