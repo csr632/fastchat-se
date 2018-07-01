@@ -39,4 +39,15 @@ class Friends extends CI_Controller
     }
     return json_response(500, false, $res);
   }
+
+  public function getFriendRequest()
+  {
+    $parsedJWT = parseJWT();
+    if (is_null($parsedJWT)) {
+      return json_response(401, false, 'no jwt header');
+    }
+    $userName = $parsedJWT['userName'];
+    $res = $this->FriendModel->getFriendRequestAbout($userName);
+    return json_response(200, true, 'ok', $res);
+  }
 }

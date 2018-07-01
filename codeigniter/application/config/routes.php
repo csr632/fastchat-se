@@ -58,6 +58,7 @@ $route['users']['POST'] = 'users/register';
 
 $route['friends']['GET'] = 'friends/getFriendList';
 $route['friends/requests']['POST'] = 'friends/addFriendRequest';
+$route['friends/requests']['GET'] = 'friends/getFriendRequest';
 
 $route['chats']['GET'] = 'chats/getChats';
 $route['chats']['POST'] = 'chats/postChat';

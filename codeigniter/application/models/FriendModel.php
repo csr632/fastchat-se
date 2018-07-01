@@ -85,4 +85,22 @@ class FriendModel extends CI_Model
       ->row_array();
     return $res;
   }
+
+  public function getFriendRequestAbout($userName)
+  {
+    $res = $this->db
+      ->select(array('reqId', 'from', 'to', 'UNIX_TIMESTAMP(time) AS time',
+        'state', 'message',
+        'u1.nickname AS fromNickname', 'u2.nickname AS toNickname'))
+      ->from('friendRequests')
+      ->join('users AS u1', 'u1.userName = friendRequests.from', 'inner')
+      ->join('users AS u2', 'u2.userName = friendRequests.to', 'inner')
+      ->group_start()
+      ->where('to', $userName)
+      ->or_where('from', $userName)
+      ->group_end()
+      ->order_by('time', 'ASC')
+      ->get();
+    return $res->result_array();
+  }
 }
