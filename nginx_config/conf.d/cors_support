@@ -67,24 +67,17 @@ if ($request_method = 'OPTIONS') {
 
 # non-OPTIONS indicates a normal CORS request
 if ($request_method = 'GET') {
-    set $cors "${cors}get";  
+    set $cors "${cors}support";  
 }
 if ($request_method = 'POST') {
-    set $cors "${cors}post";
+    set $cors "${cors}support";
+}
+if ($request_method = 'PATCH') {
+    set $cors "${cors}support";
 }
 
-# if it's a GET or POST, set the standard CORS responses header
-if ($cors = "trueget") {
-    # Tells the browser this origin may make cross-origin requests
-    # (Here, we echo the requesting origin, which matched the whitelist.)
-    add_header 'Access-Control-Allow-Origin' "$http_origin" always;
-    # Tells the browser it may show the response, when XmlHttpRequest.withCredentials=true.
-    add_header 'Access-Control-Allow-Credentials' 'true' always;
-    # # Tell the browser which response headers the JS can see, besides the "simple response headers"
-    # add_header 'Access-Control-Expose-Headers' 'myresponseheader' always;
-}
-
-if ($cors = "truepost") {
+# if it's a normal CORS request, set the standard CORS responses header
+if ($cors = "truesupport") {
     # Tells the browser this origin may make cross-origin requests
     # (Here, we echo the requesting origin, which matched the whitelist.)
     add_header 'Access-Control-Allow-Origin' "$http_origin" always;
@@ -122,7 +115,7 @@ if ($cors = "trueoptions") {
     #
     # We should only need this header for non-simple requests
     # methods (e.g., DELETE), or custom request methods (e.g., XMODIFY)
-    add_header 'Access-Control-Allow-Methods' 'GET, POST, OPTIONS' always;
+    add_header 'Access-Control-Allow-Methods' 'GET, POST, PATCH, PUT, DELETE, OPTIONS' always;
     
     # Tell browser we accept these headers in the actual request
     #
