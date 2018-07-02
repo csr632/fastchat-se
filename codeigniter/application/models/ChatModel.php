@@ -102,8 +102,9 @@ MYQUERY;
 
   public function createChat($chatName, $isGroup)
   {
-    $success = $this->db->insert('chats', array('chatName' => $chatName,
-      'isGroup' => $isGroup));
+    $success = $this->db->insert('chats',
+      array('chatName' => $isGroup ? $chatName : null,
+        'isGroup' => $isGroup));
     if (!$success) {
       return null;
     }

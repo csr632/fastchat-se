@@ -5,6 +5,7 @@ class Friends extends CI_Controller
   {
     parent::__construct();
     $this->load->model('FriendModel');
+    $this->load->database();
   }
 
   public function getFriendList()
@@ -40,7 +41,7 @@ class Friends extends CI_Controller
     return json_response(500, false, $res);
   }
 
-  public function getFriendRequest()
+  public function getFriendRequestOfUser()
   {
     $parsedJWT = parseJWT();
     if (is_null($parsedJWT)) {
@@ -49,5 +50,30 @@ class Friends extends CI_Controller
     $userName = $parsedJWT['userName'];
     $res = $this->FriendModel->getFriendRequestAbout($userName);
     return json_response(200, true, 'ok', $res);
+  }
+
+  public function processFriendRequest($reqId)
+  {
+    $parsedJWT = parseJWT();
+    if (is_null($parsedJWT)) {
+      return json_response(401, false, 'no jwt header');
+    }
+    $userName = $parsedJWT['userName'];
+    $req = $this->FriendModel->getFriendRequestById($reqId);
+    if ($req['to'] !== $userName) {
+      return json_response(403, false, 'permission deny');
+    }
+    $body = json_body();
+
+    $this->db->trans_start();
+    $this->FriendModel->responseFriendRequest($reqId, $body->state);
+    if ($body->state === 'accepted') {
+      $this->FriendModel->establishFrienship($req['from'], $req['to']);
+    }
+    $this->db->trans_complete();
+    if ($this->db->trans_status() === false) {
+      return json_response(500, false, 'fail to process friendRequests');
+    }
+    return json_response(200, true, 'ok');
   }
 }

@@ -61,11 +61,13 @@ CREATE INDEX `fk_friendship_2_idx` ON `fastchat_db`.`friendships` (`friendName` 
 DROP TABLE IF EXISTS `fastchat_db`.`friendRequests` ;
 
 CREATE TABLE IF NOT EXISTS `fastchat_db`.`friendRequests` (
+  `reqId` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
   `from` VARCHAR(16) NOT NULL,
   `to` VARCHAR(16) NOT NULL,
-  `time` DATETIME NOT NULL,
+  `time` TIMESTAMP NOT NULL,
   `state` ENUM('rejected', 'accepted', 'pending') NOT NULL,
-  PRIMARY KEY (`from`, `to`),
+  `message` VARCHAR(45) NOT NULL DEFAULT '',
+  PRIMARY KEY (`reqId`),
   CONSTRAINT `fk_friendRequest_1`
     FOREIGN KEY (`from`)
     REFERENCES `fastchat_db`.`users` (`userName`)
@@ -77,6 +79,8 @@ CREATE TABLE IF NOT EXISTS `fastchat_db`.`friendRequests` (
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
+
+CREATE INDEX `fk_friendRequest_1_idx` ON `fastchat_db`.`friendRequests` (`from` ASC);
 
 CREATE INDEX `fk_friendRequest_2_idx` ON `fastchat_db`.`friendRequests` (`to` ASC);
 

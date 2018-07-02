@@ -6,6 +6,7 @@ class FriendModel extends CI_Model
   {
     $this->load->database();
     $this->load->model('UserModel');
+    $this->load->model('ChatModel');
   }
 
   public function getFriendsOf($userName)
@@ -48,8 +49,22 @@ class FriendModel extends CI_Model
     if ($this->isFriend($from, $to)) {
       return 'is friend';
     }
-    if (!is_null($this->getFriendRequest($from, $to))) {
-      return 'request exist';
+    // 如果两人之间存在未处理请求，则不能添加新情求
+    $previousReq = $this->getFriendRequestsByFromTo($from, $to);
+    if (!is_null($previousReq)) {
+      foreach ($previousReq as $req) {
+        if ($req['state'] === 'pending') {
+          return 'request exist';
+        }
+      }
+    }
+    $previousReq = $this->getFriendRequestsByFromTo($to, $from);
+    if (!is_null($previousReq)) {
+      foreach ($previousReq as $req) {
+        if ($req['state'] === 'pending') {
+          return 'request exist';
+        }
+      }
     }
     $res = $this->db
       ->set(array('from' => $from,
@@ -75,12 +90,22 @@ class FriendModel extends CI_Model
     return true;
   }
 
-  private function getFriendRequest($from, $to)
+  public function getFriendRequestsByFromTo($from, $to)
   {
     $res = $this->db
       ->from('friendRequests')
       ->where('from', $from)
       ->where('to', $to)
+      ->get()
+      ->result_array();
+    return $res;
+  }
+
+  public function getFriendRequestById($reqId)
+  {
+    $res = $this->db
+      ->from('friendRequests')
+      ->where('reqId', $reqId)
       ->get()
       ->row_array();
     return $res;
@@ -102,5 +127,33 @@ class FriendModel extends CI_Model
       ->order_by('time', 'ASC')
       ->get();
     return $res->result_array();
+  }
+
+  public function responseFriendRequest($reqId, $newState)
+  {
+    $res = $this->db
+      ->set('state', $newState)
+      ->where('reqId', $reqId)
+      ->update('friendRequests');
+    return $res;
+  }
+
+  public function establishFrienship($userName1, $userName2)
+  {
+
+    if (!$this->db->insert('friendships',
+      array('userName' => $userName1, 'friendName' => $userName2))) {
+      return false;
+    }
+    if (!$this->db->insert('friendships',
+      array('userName' => $userName2, 'friendName' => $userName1))) {
+      return false;
+    }
+    // 创建私聊
+    $chatId = $this->ChatModel->createChat(null, false);
+    if (!$chatId) {
+      return false;
+    }
+    $this->ChatModel->addMembers($chatId, array($userName1, $userName2));
   }
 }
