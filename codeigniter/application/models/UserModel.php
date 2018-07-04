@@ -88,4 +88,21 @@ class UserModel extends CI_Model
       ->result_array();
     return $res;
   }
+
+  public function changeUserInfo($userName, $newInfo)
+  {
+    $res = $this->db
+      ->where('userName', $userName)
+      ->update('users', $newInfo);
+    return $res;
+  }
+
+  public function changeUserPassword($userName, $newP)
+  {
+    $res = $this->db
+      ->where('userName', $userName)
+      ->set('password', $newP)
+      ->update('users');
+    return $res;
+  }
 }

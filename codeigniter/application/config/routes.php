@@ -55,6 +55,8 @@ $route['translate_uri_dashes'] = FALSE;
 
 $route['users']['GET'] = 'users/findUsers';
 $route['users']['POST'] = 'users/register';
+$route['users/(:any)/info']['PATCH'] = 'users/changeUserInfo/$1';
+$route['users/(:any)/password']['PATCH'] = 'users/changeUserPassword/$1';
 
 $route['friends']['GET'] = 'friends/getFriendList';
 $route['friends/requests']['POST'] = 'friends/addFriendRequest';
