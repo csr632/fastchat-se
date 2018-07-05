@@ -46,6 +46,9 @@ class FriendModel extends CI_Model
     if ($from === $to) {
       return 'is self';
     }
+    if (is_null($this->UserModel->getUserInfo($to))) {
+      return 'user not exist';
+    }
     if ($this->isFriend($from, $to)) {
       return 'is friend';
     }
@@ -76,7 +79,7 @@ class FriendModel extends CI_Model
     return $res;
   }
 
-  private function isFriend($userName1, $userName2)
+  public function isFriend($userName1, $userName2)
   {
     $res = $this->db
       ->from('friendships')

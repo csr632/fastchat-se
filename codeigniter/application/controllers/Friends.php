@@ -41,7 +41,7 @@ class Friends extends CI_Controller
     return json_response(500, false, $res);
   }
 
-  public function getFriendRequestOfUser()
+  public function getFriendRequestByUser()
   {
     $parsedJWT = parseJWT();
     if (is_null($parsedJWT)) {
@@ -60,6 +60,9 @@ class Friends extends CI_Controller
     }
     $userName = $parsedJWT['userName'];
     $req = $this->FriendModel->getFriendRequestById($reqId);
+    if (is_null($req)) {
+      return json_response(404, false, 'friend request not exist');
+    }
     if ($req['to'] !== $userName) {
       return json_response(403, false, 'permission deny');
     }

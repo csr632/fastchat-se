@@ -4,9 +4,12 @@ class ChatModel extends CI_Model
   public function __construct()
   {
     $this->load->database();
+    $this->load->model('FriendModel');
+    $this->load->model('UserModel');
+
   }
 
-  public function getChats($userName)
+  public function getChatsByUser($userName)
   {
     $sql = <<<'MYQUERY'
 SELECT
@@ -41,6 +44,11 @@ MYQUERY;
     return $res;
   }
 
+  public function getChatsById($chatId)
+  {
+    return $this->db->where('chatId', $chatId)->get('chats')->row_array();
+  }
+
   public function getMembers($chatId)
   {
     // 如果不存在这个chatId，返回NULL
@@ -62,6 +70,13 @@ MYQUERY;
       ->result_array();
 
     return $res;
+  }
+
+  public function isMember($chatId, $userName)
+  {
+    $exist = $this->db->get_where('inChat', array('chatId' => $chatId,
+      'userName' => $userName))->row_array();
+    return !is_null($exist);
   }
 
   public function getMessages($chatId)
@@ -122,5 +137,107 @@ MYQUERY;
       return false;
     }
     return true;
+  }
+
+  public function createGroupInvitation($from, $to, $chatId, $message)
+  {
+    if (is_null($this->UserModel->getUserInfo($from))) {
+      return 'sender not exist';
+    }
+    if (is_null($this->UserModel->getUserInfo($to))) {
+      return 'receiver not exist';
+    }
+    if (is_null($this->getChatsById($chatId))) {
+      return 'chat not exist';
+    }
+    if (!$this->isMember($chatId, $from)) {
+      return 'sender not in the group';
+    }
+    if ($this->isMember($chatId, $to)) {
+      return 'receiver already in the group';
+    }
+    if (!$this->FriendModel->isFriend($from, $to)) {
+      return 'receiver is not sender\'s friend';
+    }
+
+    $previousInv = $this->searchGroupInvitation($to, $chatId);
+    foreach ($previousInv as $inv) {
+      if ($inv['state'] === 'pending') {
+        return 'invitation exists';
+      }
+    }
+    $res = $this->db
+      ->set('time', 'NOW()', false)
+      ->insert('groupInvitations', array(
+        'from' => $from,
+        'to' => $to,
+        'chatId' => $chatId,
+        'message' => $message,
+        'state' => 'pending',
+      ));
+    return $res ? 'ok' : 'insert fail';
+  }
+
+  public function searchGroupInvitation($to, $chatId)
+  {
+    $res = $this->db
+      ->where('chatId', $chatId)
+      ->where('to', $to)
+      ->get('groupInvitations');
+    if (!$res) {
+      throw new Exception($this->db->error()['message']);
+    }
+    return $res->result_array();
+  }
+
+  public function getGroupInvitationByUser($userName)
+  {
+    $res = $this->db
+      ->select(array('invId', 'from', 'to', 'UNIX_TIMESTAMP(time) AS time',
+        'state', 'message',
+        'u1.nickname AS fromNickname', 'u2.nickname AS toNickname',
+        'chats.chatId', 'chats.chatName'))
+      ->from('groupInvitations')
+      ->join('users AS u1', 'u1.userName = groupInvitations.from', 'inner')
+      ->join('users AS u2', 'u2.userName = groupInvitations.to', 'inner')
+      ->join('chats', 'chats.chatId = groupInvitations.chatId', 'inner')
+      ->group_start()
+      ->where('to', $userName)
+      ->or_where('from', $userName)
+      ->group_end()
+      ->order_by('time', 'ASC')
+      ->get();
+    if (!$res) {
+      throw new Exception($this->db->error()['message']);
+    }
+    return $res->result_array();
+  }
+
+  public function getGroupInvitationById($invId)
+  {
+    $res = $this->db
+      ->from('groupInvitations')
+      ->where('invId', $invId)
+      ->get()
+      ->row_array();
+    return $res;
+  }
+
+  public function responseGroupInvitation($invId, $newState)
+  {
+    $res = $this->db
+      ->set('state', $newState)
+      ->where('invId', $invId)
+      ->update('groupInvitations');
+    return $res;
+  }
+
+  public function changeChatName($chatId, $newChatName)
+  {
+    $res = $this->db
+      ->set('chatName', $newChatName)
+      ->where('chatId', $chatId)
+      ->update('chats');
+    return $res;
   }
 }

@@ -60,11 +60,15 @@ $route['users/(:any)/password']['PATCH'] = 'users/changeUserPassword/$1';
 
 $route['friends']['GET'] = 'friends/getFriendList';
 $route['friends/requests']['POST'] = 'friends/addFriendRequest';
-$route['friends/requests']['GET'] = 'friends/getFriendRequestOfUser';
+$route['friends/requests']['GET'] = 'friends/getFriendRequestByUser';
 $route['friends/requests/(:num)']['PATCH'] = 'friends/processFriendRequest/$1';
 
-$route['chats']['GET'] = 'chats/getChats';
+$route['chats']['GET'] = 'chats/getChatsByUser';
 $route['chats']['POST'] = 'chats/postChat';
+$route['chats/(:num)']['PATCH'] = 'chats/patchChatName/$1';
 $route['chats/(:num)/messages']['GET'] = 'chats/getMessages/$1';
 $route['chats/(:num)/messages']['POST'] = 'chats/postMessages/$1';
 $route['chats/(:num)/members']['GET'] = 'chats/getMembers/$1';
+$route['chats/invitations']['POST'] = 'chats/inviteFriend';
+$route['chats/invitations']['GET'] = 'chats/getGroupInvitationByUser';
+$route['chats/invitations/(:num)']['PATCH'] = 'chats/processGroupInvitation/$1';
