@@ -46,6 +46,9 @@
 # based on https://gist.github.com/alexjs/4165271
 #
 
+# init variable
+set $cors "";
+
 # if the request included an Origin: header with an origin on the whitelist,
 # then it is some kind of CORS request.
 
