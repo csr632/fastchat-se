@@ -240,4 +240,57 @@ MYQUERY;
       ->update('chats');
     return $res;
   }
+
+  public function deleteGroupMember($chatId, $userName)
+  {
+    $this->db->trans_start();
+    if (!$this->isMember($chatId, $userName)) {
+      return 'not a member';
+    }
+    if ($this->getChatsById($chatId)['isGroup'] !== '1') {
+      return 'can\'t quit private chat';
+    }
+    $res = $this->db
+      ->where('userName', $userName)
+      ->where('chatId', $chatId)
+      ->delete('inChat');
+    if (!$res) {
+      return 'delete inChat fail';
+    }
+
+    $deleteGroupInvitations = <<<'MYQUERY'
+DELETE FROM fastchat_db.groupInvitations
+WHERE
+		chatId NOT IN (SELECT
+				inChat.chatId
+		FROM
+				fastchat_db.inChat)
+MYQUERY;
+    $deleteGroupMessages = <<<'MYQUERY'
+DELETE FROM fastchat_db.messages
+WHERE
+		chatId NOT IN (SELECT
+				inChat.chatId
+		FROM
+				fastchat_db.inChat)
+MYQUERY;
+    $deleteGroup = <<<'MYQUERY'
+DELETE FROM fastchat_db.chats
+WHERE
+		chatId NOT IN (SELECT
+				inChat.chatId
+		FROM
+				fastchat_db.inChat)
+MYQUERY;
+
+    $this->db->query($deleteGroupInvitations);
+    $this->db->query($deleteGroupMessages);
+    $this->db->query($deleteGroup);
+
+    $this->db->trans_complete();
+    if ($this->db->trans_status() === false) {
+      return 'quit chat fail';
+    }
+    return true;
+  }
 }

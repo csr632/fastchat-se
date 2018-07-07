@@ -69,6 +69,7 @@ $route['chats/(:num)']['PATCH'] = 'chats/patchChatName/$1';
 $route['chats/(:num)/messages']['GET'] = 'chats/getMessages/$1';
 $route['chats/(:num)/messages']['POST'] = 'chats/postMessages/$1';
 $route['chats/(:num)/members']['GET'] = 'chats/getMembers/$1';
+$route['chats/(:num)/members/(:any)']['DELETE'] = 'chats/deleteGroupMember/$1/$2';
 $route['chats/invitations']['POST'] = 'chats/inviteFriend';
 $route['chats/invitations']['GET'] = 'chats/getGroupInvitationByUser';
 $route['chats/invitations/(:num)']['PATCH'] = 'chats/processGroupInvitation/$1';

@@ -204,4 +204,24 @@ class Chats extends CI_Controller
     }
     return json_response(200, true, 'ok');
   }
+
+  public function deleteGroupMember($chatId, $userName)
+  {
+    $parsedJWT = parseJWT();
+    if (is_null($parsedJWT)) {
+      return json_response(401, false, 'no jwt header');
+    }
+    $senderName = $parsedJWT['userName'];
+    // 目前只支持删除自己（退出群聊）
+    if ($senderName !== $userName) {
+      return json_response(403, false, 'can\'t delete others');
+    }
+    $res = $this->ChatModel->deleteGroupMember($chatId, $userName);
+    if ($res === 'not a member' || $res === 'can\'t quit private chat') {
+      return json_response(403, false, $res);
+    } else if ($res === 'delete inChat fail' || $res === 'quit chat fail') {
+      return json_response(500, false, $res);
+    }
+    return json_response(200, true, 'ok');
+  }
 }

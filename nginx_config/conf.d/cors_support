@@ -75,6 +75,9 @@ if ($request_method = 'POST') {
 if ($request_method = 'PATCH') {
     set $cors "${cors}support";
 }
+if ($request_method = 'DELETE') {
+    set $cors "${cors}support";
+}
 
 # if it's a normal CORS request, set the standard CORS responses header
 if ($cors = "truesupport") {
