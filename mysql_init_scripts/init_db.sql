@@ -150,6 +150,44 @@ ENGINE = InnoDB;
 CREATE INDEX `fk_inChat_2_idx` ON `fastchat_db`.`inChat` (`chatId` ASC);
 
 
+-- -----------------------------------------------------
+-- Table `fastchat_db`.`groupInvitations`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `fastchat_db`.`groupInvitations` ;
+
+CREATE TABLE IF NOT EXISTS `fastchat_db`.`groupInvitations` (
+  `invId` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `chatId` BIGINT UNSIGNED NOT NULL,
+  `from` VARCHAR(16) NOT NULL,
+  `to` VARCHAR(16) NOT NULL,
+  `message` VARCHAR(45) NOT NULL,
+  `time` TIMESTAMP NOT NULL,
+  `state` ENUM('rejected', 'accepted', 'pending') NOT NULL,
+  PRIMARY KEY (`invId`),
+  CONSTRAINT `fk_groupInvitation_1`
+    FOREIGN KEY (`from`)
+    REFERENCES `fastchat_db`.`users` (`userName`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_groupInvitation_2`
+    FOREIGN KEY (`to`)
+    REFERENCES `fastchat_db`.`users` (`userName`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_groupInvitation_3`
+    FOREIGN KEY (`chatId`)
+    REFERENCES `fastchat_db`.`chats` (`chatId`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+CREATE INDEX `fk_groupInvitation_1_idx` ON `fastchat_db`.`groupInvitations` (`from` ASC);
+
+CREATE INDEX `fk_groupInvitation_2_idx` ON `fastchat_db`.`groupInvitations` (`to` ASC);
+
+CREATE INDEX `fk_groupInvitation_3_idx` ON `fastchat_db`.`groupInvitations` (`chatId` ASC);
+
+
 SET SQL_MODE=@OLD_SQL_MODE;
 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
