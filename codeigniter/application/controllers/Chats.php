@@ -26,6 +26,7 @@ class Chats extends CI_Controller
           array('messageId' => $item['messageId'],
             'content' => $item['content'],
             'from' => $item['from'],
+            'fromNickname' => $item['fromNickname'],
           ),
         );
       },

@@ -12,23 +12,25 @@ class ChatModel extends CI_Model
   public function getChatsByUser($userName)
   {
     $sql = <<<'MYQUERY'
-SELECT
+SELECT 
     chats.chatId,
     chats.chatName,
     chats.isGroup,
     latestMessages.messageId,
     latestMessages.content,
-    latestMessages.`from`
+    latestMessages.`from`,
+    latestMessages.fromNickname
 FROM
     inChat,
     chats
         LEFT OUTER JOIN
-    (SELECT
-        m1.*
+    (SELECT 
+        m1.*, messageFrom.nickname AS fromNickname
     FROM
         messages AS m1
+    INNER JOIN users AS messageFrom ON messageFrom.userName = m1.`from`
     WHERE
-        m1.messageId IN (SELECT
+        m1.messageId IN (SELECT 
                 MAX(m2.messageId)
             FROM
                 messages AS m2
@@ -90,9 +92,11 @@ MYQUERY;
     $res = $this->db
       ->select(array('messageId',
         'content',
-        'from',
+				'from',
+				'nickname as fromNickname'
       ))
-      ->from('messages')
+			->from('messages')
+			->join('users', 'users.userName = messages.from')
       ->where('chatId', $chatId)
       ->order_by('messageId', 'ASC')
       ->get()
