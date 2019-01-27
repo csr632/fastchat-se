@@ -1,8 +1,8 @@
 
 # 将这个文件命名为cors_support，
 # 然后通过`include conf.d/cors_support;`将这个文件引入到**location block**中。
-# 在原gist的基础上为add_header增加了always参数，因此及时状态码为4xx、5xx也会返回CORS header。
-# CORS白名单需要按照自己的需要配置，配置第56行的正则表达式。
+# 在原gist的基础上为add_header增加了always参数，因此即使状态码为4xx、5xx也会返回CORS header。
+# CORS白名单需要按照自己的需要配置，配置第59行的正则表达式。
 #
 # A CORS (Cross-Origin Resouce Sharing) config for nginx
 #
